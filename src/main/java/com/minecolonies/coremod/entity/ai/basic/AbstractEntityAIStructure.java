@@ -32,6 +32,7 @@ import com.minecolonies.coremod.entity.ai.util.BuildingStructureHandler;
 import com.minecolonies.coremod.research.MultiplierModifierResearchEffect;
 import com.minecolonies.coremod.tileentities.TileEntityDecorationController;
 import net.minecraft.block.*;
+import net.minecraft.block.material.Material;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tags.BlockTags;
@@ -363,6 +364,9 @@ public abstract class AbstractEntityAIStructure<J extends AbstractJobStructure<?
                 result = placer.executeStructureStep(world, null, progress, StructurePlacer.Operation.BLOCK_REMOVAL,
                   () -> placer.getIterator().decrement((info, pos, handler) -> handler.getWorld().getBlockState(pos).getBlock() instanceof IBuilderUndestroyable
                                                                                  || handler.getWorld().getBlockState(pos).getBlock() == Blocks.BEDROCK
+                                                                                 || handler.getWorld().getBlockState(pos).getBlock() == Blocks.SNOW
+                                                                                 || handler.getWorld().getBlockState(pos).getBlock() == Blocks.FIRE
+                                                                                 || handler.getWorld().getBlockState(pos).getBlock() == Blocks.GRASS
                                                                                  || handler.getWorld().getBlockState(pos).getBlock() instanceof AirBlock
                                                                                  || !handler.getWorld().getBlockState(pos).getFluidState().isEmpty()), false);
                 break;
@@ -424,11 +428,25 @@ public abstract class AbstractEntityAIStructure<J extends AbstractJobStructure<?
      */
     public IAIState doMining()
     {
-        if (blockToMine == null || world.getBlockState(blockToMine).getBlock() instanceof AirBlock)
+        if (blockToMine == null)
         {
             return BUILDING_STEP;
         }
-
+        
+        BlockState bs = world.getBlockState(blockToMine);
+        if (bs.getMaterial() == Material.AIR)
+        {
+            return BUILDING_STEP;
+        }
+        
+        Block block = bs.getBlock();
+        if (block == Blocks.SNOW ||
+            block == Blocks.GRASS ||
+            block == Blocks.FIRE)
+        {
+            return BUILDING_STEP;
+        }
+        
         if (!mineBlock(blockToMine, getCurrentWorkingPosition()))
         {
             worker.swingArm(Hand.MAIN_HAND);
@@ -704,6 +722,9 @@ public abstract class AbstractEntityAIStructure<J extends AbstractJobStructure<?
         return block == null
                  || BlockUtils.isWater(block.getDefaultState())
                  || block.isIn(BlockTags.LEAVES)
+                 || block == Blocks.SNOW
+                 || block == Blocks.GRASS
+                 || block == Blocks.FIRE
                  || block == ModBlocks.blockDecorationPlaceholder;
     }
 
