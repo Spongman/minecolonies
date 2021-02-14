@@ -294,4 +294,12 @@ public class WindowHutAllInventory extends AbstractWindowSkeleton
         }
         return result;
     }
+    
+
+    @Override
+    public void onOpened()
+    {
+        super.onOpened();
+        findPaneOfTypeByID("names", TextField.class).setFocus();
+    }    
 }
