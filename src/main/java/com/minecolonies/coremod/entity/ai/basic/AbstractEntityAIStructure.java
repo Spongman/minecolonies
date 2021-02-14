@@ -358,6 +358,14 @@ public abstract class AbstractEntityAIStructure<J extends AbstractJobStructure<?
                                                                                                          || handler.getWorld().getBlockState(pos).getBlock() instanceof IBuilderUndestroyable),
                   true);
                 break;
+            case CLEAR_TREES:
+                //trees
+                result = placer.executeStructureStep(
+                    world, null, progress, StructurePlacer.Operation.BLOCK_REMOVAL,
+                    () -> placer.getIterator().decrement((info, pos, handler) -> !handler.getWorld().getBlockState(pos).getBlock().isIn(BlockTags.LOGS)),
+                    false
+                );
+                break;
             case CLEAR:
             default:
 
@@ -367,8 +375,17 @@ public abstract class AbstractEntityAIStructure<J extends AbstractJobStructure<?
                                                                                  || handler.getWorld().getBlockState(pos).getBlock() == Blocks.SNOW
                                                                                  || handler.getWorld().getBlockState(pos).getBlock() == Blocks.FIRE
                                                                                  || handler.getWorld().getBlockState(pos).getBlock() == Blocks.GRASS
+                                                                                 || handler.getWorld().getBlockState(pos).getBlock().isIn(BlockTags.LEAVES)
                                                                                  || handler.getWorld().getBlockState(pos).getBlock() instanceof AirBlock
                                                                                  || !handler.getWorld().getBlockState(pos).getFluidState().isEmpty()), false);
+                break;
+            case CLEAR_LEAVES:
+                //trees
+                result = placer.executeStructureStep(
+                    world, null, progress, StructurePlacer.Operation.BLOCK_REMOVAL,
+                    () -> placer.getIterator().decrement((info, pos, handler) -> !handler.getWorld().getBlockState(pos).getBlock().isIn(BlockTags.LEAVES)),
+                    false
+                );
                 break;
         }
 
@@ -496,8 +513,8 @@ public abstract class AbstractEntityAIStructure<J extends AbstractJobStructure<?
               position,
               name,
               new PlacementSettings(isMirrored ? Mirror.FRONT_BACK : Mirror.NONE, BlockPosUtil.getRotationFromRotations(rotateTimes)),
-              this, new BuildingStructureHandler.Stage[] {CLEAR, BUILD_SOLID, CLEAR_WATER, CLEAR_NON_SOLIDS, DECORATE, SPAWN});
-            getOwnBuilding().setTotalStages(6);
+              this, new BuildingStructureHandler.Stage[] {CLEAR_TREES, CLEAR, CLEAR_LEAVES, BUILD_SOLID, CLEAR_WATER, CLEAR_NON_SOLIDS, DECORATE, SPAWN});
+            getOwnBuilding().setTotalStages(7);
         }
 
         if (!structure.hasBluePrint())
