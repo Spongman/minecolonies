@@ -153,20 +153,33 @@ public class WindowClipBoard extends AbstractWindowSkeleton
 
             final IRequest<?> request = openRequests.get(index);
             final ItemIcon exampleStackDisplay = rowPane.findPaneOfTypeByID(LIST_ELEMENT_ID_REQUEST_STACK, ItemIcon.class);
+            final Image logo = rowPane.findPaneOfTypeByID(DELIVERY_IMAGE, Image.class);
             final List<ItemStack> displayStacks = request.getDisplayStacks();
+
+            if (exampleStackDisplay != null)
+            {
+                exampleStackDisplay.setVisible(false);
+            }
+            if (logo != null)
+            {
+                logo.setVisible(false);
+            }
 
             if (!displayStacks.isEmpty())
             {
                 if (exampleStackDisplay != null)
                 {
                     exampleStackDisplay.setItem(displayStacks.get((lifeCount / LIFE_COUNT_DIVIDER) % displayStacks.size()));
+                    exampleStackDisplay.setVisible(true);
                 }
             }
             else if (!request.getDisplayIcon().equals(MISSING))
             {
-                final Image logo = rowPane.findPaneOfTypeByID(DELIVERY_IMAGE, Image.class);
-                logo.setVisible(true);
-                logo.setImage(request.getDisplayIcon());
+                if (logo != null)
+                {
+                    logo.setImage(request.getDisplayIcon());
+                    logo.setVisible(true);
+                }
             }
 
             rowPane.findPaneOfTypeByID(REQUESTER, Label.class)
